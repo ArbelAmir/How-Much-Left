@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">howMuchLeft</string>
+    <string name="action_settings">Settings</string>
+    <string name="settings">Settings</string>
+    <string name="pref_startBudget_summ">your initial budget</string>
+    <string name="pref_startBudget_key">pref_startBudget_key</string>
+    <string name="pref_startBudget_title">starting budget</string>
+</resources>

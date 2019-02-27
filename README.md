@@ -1,4 +1,4 @@
-# howMuchLeft
+# How Much Left
 
 A simple Android app for budget management.
 

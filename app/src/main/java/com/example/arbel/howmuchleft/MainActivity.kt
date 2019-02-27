@@ -5,7 +5,9 @@ package com.example.arbel.howmuchleft
 
 import android.content.Intent
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -15,16 +17,23 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var itemsDBHelper : DatabaseHelper
+    lateinit var itemsDBHelper: DatabaseHelper
 
-    private val initialBudget = 500
+    private var initialBudget = 500.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        initialBudget = PreferenceManager.getDefaultSharedPreferences(applicationContext).getString("pref_startBudget_key","300").toDouble()
+        Log.d("INITIALBUDGET", initialBudget.toString())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.my_toolbar))
 
         itemsDBHelper = DatabaseHelper(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        initialBudget = PreferenceManager.getDefaultSharedPreferences(applicationContext).getString("pref_startBudget_key","300").toDouble()
     }
 
 
@@ -44,11 +53,17 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    fun reset(v: View) {
+        Log.d("BUTTON","reset")
+        itemsDBHelper.deleteAll()
+        this.textview_result.text = "reset all list"
+        this.ll_entries.removeAllViews()
+    }
 
-    fun addItem(v:View){
+    fun addItem(v: View) {
         val name = this.edittext_name.text.toString()
         val price = this.edittext_price.text.toString()
-        var result = itemsDBHelper.insertItem(ItemModel(name,price))
+        var result = itemsDBHelper.insertItem(ItemModel(name, price))
         //clear all edittext s
         this.edittext_price.setText("")
         this.edittext_name.setText("")
@@ -57,7 +72,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun showAllItems(v:View){
+    fun showAllItems(v: View) {
         var items = itemsDBHelper.readAllItems()
         this.ll_entries.removeAllViews()
         items.forEach {
@@ -76,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         this.ll_entries.addView(textView)
     }
 
-    fun showTotalBudget(v:View){
+    fun showTotalBudget(v: View) {
         this.ll_entries.removeAllViews()
         val textView = TextView(this)
         textView.textSize = 30F

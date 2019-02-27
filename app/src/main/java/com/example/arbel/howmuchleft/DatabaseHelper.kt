@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -50,16 +51,33 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         values.put(DBContract.ItemEntry.COLUMN_ITEM_PRICE, item.price)
 
         // Insert the new row, returning the primary key value of the new row
-        val newRowId = db.insert(DBContract.ItemEntry.TABLE_NAME, null, values)
+        db.insert(DBContract.ItemEntry.TABLE_NAME, null, values)
 
         return true
+    }
+
+    fun reset(): Boolean {
+        return true
+    }
+
+    fun delete(id: String) {
+        val args = arrayOf(id)
+        writableDatabase.delete("texts", "_ID=?", args)
+    }
+
+    fun deleteAll() {
+        val db:SQLiteDatabase  = this.getWritableDatabase();
+        db.delete(DBContract.ItemEntry.TABLE_NAME ,null,null);
+        db.execSQL("delete from "+ DBContract.ItemEntry.TABLE_NAME );
+        Log.d("DBHELPER","delete all invoked")
+        db.close()
     }
 
 
     fun readAllItems(): ArrayList<ItemModel> {
         val items = ArrayList<ItemModel>()
         val db = writableDatabase
-        var cursor: Cursor? = null
+        var cursor: Cursor?
 
         try {
             cursor = db.rawQuery("select * from " + DBContract.ItemEntry.TABLE_NAME, null)
@@ -86,7 +104,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     fun calcItemsPrice(): Float {
         val items = ArrayList<ItemModel>()
         val db = writableDatabase
-        var cursor: Cursor? = null
+        var cursor: Cursor?
         try {
             cursor = db.rawQuery("select * from " + DBContract.ItemEntry.TABLE_NAME, null)
         } catch (e: SQLiteException) {
